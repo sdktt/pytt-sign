@@ -37,3 +37,28 @@ def fill_signature(params, api_key):
     sign = calculate_signature(params, api_key)
     params['sign'] = sign
     return params
+
+
+def calculate_requestPayment_signature(params, api_key):
+    return calculate_signature({
+        'app_id': params.get('app_id'),
+        'sign_type': 'MD5',
+        'timestamp': params.get('timestamp'),
+        'trade_no': params.get('trade_no'),
+        'merchant_id': params.get('merchant_id'),
+        'uid': params.get('uid'),
+        'total_amount': params.get('total_amount'),
+        'params': params.get('params'),
+    }, api_key)
+
+
+def check_signature(params, api_key, sign=None):
+    _params = copy.deepcopy(params)
+    sign = sign or _params.pop('sign', '')
+    return sign == calculate_requestPayment_signature(_params, api_key)
+
+
+def fill_signature(params, api_key):
+    sign = calculate_requestPayment_signature(params, api_key)
+    params['sign'] = sign
+    return params
